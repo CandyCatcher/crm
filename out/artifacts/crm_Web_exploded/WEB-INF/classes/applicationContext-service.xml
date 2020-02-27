@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!--1. 扫描器-->
+    <context:component-scan base-package="top.candy.ssm.service"/>
+
+    <!-- 2.事务-->
+    <!-- 声明式事务管理-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 传播行为 -->
+            <tx:method name="save*" propagation="REQUIRED" />
+            <tx:method name="insert*" propagation="REQUIRED" />
+            <tx:method name="delete*" propagation="REQUIRED" />
+            <tx:method name="update*" propagation="REQUIRED" />
+            <tx:method name="find*" propagation="SUPPORTS" read-only="true" />
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true" />
+        </tx:attributes>
+    </tx:advice>
+    <!-- 切面 -->
+    <aop:config>
+        <!--任意返回值、任意方法名、任意参数-->
+        <aop:advisor advice-ref="txAdvice"
+                     pointcut="execution(* top.candy.ssm.service.impl.*.*(..))" />
+    </aop:config>
+
+</beans>
